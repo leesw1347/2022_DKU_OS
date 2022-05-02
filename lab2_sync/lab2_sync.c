@@ -355,7 +355,9 @@ void hash_queue_insert_by_target_fg(int bucketKey, pthread_mutex_t *pthreadMutex
             hashlist[hash_value]->q_loc->next == null &&
             hashlist[hash_value]->q_loc->prev == null &&
             hashlist[hash_value]->q_loc->data == -1) {
+            pthread_mutex_unlock(pthreadMutex);
 
+            pthread_mutex_lock(pthreadMutex);
             front = (queue_node *) hashlist[hash_value]->q_loc;
             rear = (queue_node *) hashlist[hash_value]->q_loc;
             rear->next = front;
@@ -363,9 +365,11 @@ void hash_queue_insert_by_target_fg(int bucketKey, pthread_mutex_t *pthreadMutex
             front->next = null;
             front->prev = rear;
             hash_queue_add_fg(hashlist, bucketKey); // hash_queue를 추가한다
+            pthread_mutex_unlock(pthreadMutex);
 
         } else { // 버킷 내 해시에 데이터 값이 있고 값이 check entry를 통해서
             // entry가 없는 next pointer까지 접근한다
+            pthread_mutex_lock(pthreadMutex);
             int find_loc = false;
 //            queue_node *qPrevNode = hashlist[hash_value]->q_loc; // node header
             queue_node *qNode = hashlist[hash_value]->q_loc->next; // next node
@@ -384,8 +388,10 @@ void hash_queue_insert_by_target_fg(int bucketKey, pthread_mutex_t *pthreadMutex
                     }
                 }
             }
+            pthread_mutex_unlock(pthreadMutex);
 //            printf("\n");
             if (find_loc) {
+                pthread_mutex_lock(pthreadMutex);
                 // 만약 노드를 찾으면 해당 노드에 bucketKey를 매칭해주고
                 // 다음 노드를 설정해줄 수 있도록 값을 넣어준다
                 qNode->data = bucketKey;
@@ -393,6 +399,7 @@ void hash_queue_insert_by_target_fg(int bucketKey, pthread_mutex_t *pthreadMutex
                 qNode->next->data = -1;
                 qNode->next->prev = null;
                 qNode->next->next = null;
+                pthread_mutex_unlock(pthreadMutex);
             }
         }
         pthread_mutex_unlock(pthreadMutex);
