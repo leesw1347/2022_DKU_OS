@@ -2,6 +2,9 @@
 *   lab2_thread_example.c :
 *       - thread usage example code.
 *       - thread argument example code.
+* 
+*           Student id : 32181141
+*           Student name : CHANGOHKIM
 *
 *   Implement thread argument code 
 */

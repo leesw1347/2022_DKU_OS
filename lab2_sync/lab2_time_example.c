@@ -1,7 +1,9 @@
 /*
 *   lab2_thread_example.c :
 *       - gettimeofday usage example code.
-*       
+*           Student id : 32181141
+*           Student name : CHANGOHKIM      
+* 
 *   Implement gettimeofday code 
 */
 
