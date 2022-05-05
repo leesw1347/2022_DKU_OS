@@ -1,0 +1,117 @@
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision eb7b3637e7120a5161fbe95e672ec4b393fd3dfe)
++++ b/.idea/vcs.xml	(date 1650907541310)
+@@ -1,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: lab2_sync/include/lab2_sync_types.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\r\n*   DKU Operating System Lab\r\n*           Lab2 (Hash Queue Lock Problem)\r\n*           Student id : \r\n*           Student name : \r\n*\r\n*   lab1_sync_types.h :\r\n*       - Lab2 header file.\r\n*       - It contains Hash Queue structure, timeval functions, ... etc\r\n*\r\n*/\r\n\r\n#ifndef _LAB2_HEADER_H\r\n#define _LAB2_HEADER_H\r\n\r\n#include <stdio.h>\r\n#include <fcntl.h>\r\n#include <time.h>\r\n#include <sys/time.h>\r\n#include <string.h>\r\n#include <unistd.h>\r\n#include <sys/types.h>\r\n#include <sys/stat.h>\r\n#include <assert.h>\r\n#include <pthread.h>\r\n#include <asm/unistd.h>\r\n\r\n#define HASH_SIZE\t\t13\r\n#define LAB2_SUCCESS\t0\r\n#define LAB2_ERROR\t\t-1\r\n\r\n/*\r\n * If You need to more functions or vaiable\r\n * Declare functions or struct in lab2_sync_types.h\r\n */\r\n\r\n/* Variable that contains number of data */\r\nint target;\r\n\r\n/* Strucuture for thread, hash, queue */\r\ntypedef struct threadArg {\r\n\tint node_count;\r\n\tint thread_num;\r\n} thread_arg; // Maybe you don't need to modify this structure.\r\n\r\ntypedef struct q_node {\r\n\tstruct q_node *next;\r\n\tstruct q_node *prev;\r\n\tint data;\r\n} queue_node;\r\n\r\nqueue_node *front;\r\nqueue_node *rear;\r\n\r\ntypedef struct hash_list {\r\n\tstruct hash_list *next;\r\n\tstruct q_node *q_loc;\r\n} hlist_node;\r\n\r\nhlist_node *hashlist[HASH_SIZE];\r\n\r\n/* Lab2 Hash and Queue init functions */\r\nvoid init_queue();\r\nvoid init_hlist_node();\r\n\r\n/* Lab2 Hash function */\r\nint hash(int val);\r\nint value_exist(int val);\r\n\r\n/* Lab2 Hash Queue functions for single-thread */\r\nvoid enqueue(queue_node *new_node);\r\nvoid dequeue(queue_node *del_node);\r\nvoid hash_queue_add(hlist_node *hashtable, int val);\r\nvoid hash_queue_insert_by_target();\r\nvoid hash_queue_delete_by_target();\r\n\r\n/* Lab2 Hash Queue functions for Coarse-grained */\r\nvoid enqueue_cg(queue_node *new_node);\r\nvoid dequeue_cg(queue_node *del_node);\r\nvoid hash_queue_add_cg(hlist_node *hashtable, int val);\r\nvoid hash_queue_insert_by_target_cg();\r\nvoid hash_queue_delete_by_target_cg();\r\n\r\n/* Lab2 Hash Queue functions for fine-grained */\r\nvoid enqueue_fg(queue_node *new_node);\r\nvoid dequeue_fg(queue_node *del_node);\r\nvoid hash_queue_add_fg(hlist_node *hashtable, int val);\r\nvoid hash_queue_insert_by_target_fg();\r\nvoid hash_queue_delete_by_target_fg();\r\n\r\n/* Lab2_timeval.c related function */\r\ndouble get_timeval(struct timeval *tv_start, struct timeval *tv_end);\r\n\r\n#endif /* LAB2_HEADER_H*/\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lab2_sync/include/lab2_sync_types.h b/lab2_sync/include/lab2_sync_types.h
+--- a/lab2_sync/include/lab2_sync_types.h	(revision eb7b3637e7120a5161fbe95e672ec4b393fd3dfe)
++++ b/lab2_sync/include/lab2_sync_types.h	(date 1650907531503)
+@@ -25,9 +25,10 @@
+ #include <pthread.h>
+ #include <asm/unistd.h>
+ 
+-#define HASH_SIZE		13
+-#define LAB2_SUCCESS	0
+-#define LAB2_ERROR		-1
++#define HASH_SIZE        13
++#define LAB2_SUCCESS    0
++#define LAB2_ERROR        -1
++#define null NULL
+ 
+ /*
+  * If You need to more functions or vaiable
+@@ -39,53 +40,67 @@
+ 
+ /* Strucuture for thread, hash, queue */
+ typedef struct threadArg {
+-	int node_count;
+-	int thread_num;
++    int node_count;
++    int thread_num;
+ } thread_arg; // Maybe you don't need to modify this structure.
+ 
+ typedef struct q_node {
+-	struct q_node *next;
+-	struct q_node *prev;
+-	int data;
++    struct q_node *next; // 4byte pointer
++    struct q_node *prev; // 4byte pointer
++    int data; // 4byte
+ } queue_node;
+ 
+-queue_node *front;
+-queue_node *rear;
++queue_node *front; // 큐노드의 최앞단
++queue_node *rear; // 큐노드의 최뒷단
+ 
+ typedef struct hash_list {
+-	struct hash_list *next;
+-	struct q_node *q_loc;
++    struct hash_list *next; // 8byte pointer
++    struct q_node *q_loc; // 8byte pointer
+ } hlist_node;
+ 
+ hlist_node *hashlist[HASH_SIZE];
+ 
+ /* Lab2 Hash and Queue init functions */
+ void init_queue();
++
+ void init_hlist_node();
+ 
+ /* Lab2 Hash function */
+ int hash(int val);
++
+ int value_exist(int val);
+ 
+ /* Lab2 Hash Queue functions for single-thread */
+ void enqueue(queue_node *new_node);
++
+ void dequeue(queue_node *del_node);
++
+ void hash_queue_add(hlist_node *hashtable, int val);
++
+ void hash_queue_insert_by_target();
++
+ void hash_queue_delete_by_target();
+ 
+ /* Lab2 Hash Queue functions for Coarse-grained */
+ void enqueue_cg(queue_node *new_node);
++
+ void dequeue_cg(queue_node *del_node);
++
+ void hash_queue_add_cg(hlist_node *hashtable, int val);
++
+ void hash_queue_insert_by_target_cg();
++
+ void hash_queue_delete_by_target_cg();
+ 
+ /* Lab2 Hash Queue functions for fine-grained */
+ void enqueue_fg(queue_node *new_node);
++
+ void dequeue_fg(queue_node *del_node);
++
+ void hash_queue_add_fg(hlist_node *hashtable, int val);
++
+ void hash_queue_insert_by_target_fg();
++
+ void hash_queue_delete_by_target_fg();
+ 
+ /* Lab2_timeval.c related function */
